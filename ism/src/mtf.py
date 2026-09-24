@@ -69,7 +69,7 @@ class mtf:
 
         # Calculate the System MTF
         self.logger.debug("Calculation of the Sysmtem MTF by multiplying the different contributors")
-        Hsys = 1 # dummy
+        Hsys = Hdiff * Hdefoc * Hwfe * Hdet * Hsmear * Hmotion # dummy
 
         # Plot cuts ACT/ALT of the MTF
         self.plotMtf(Hdiff, Hdefoc, Hwfe, Hdet, Hsmear, Hmotion, Hsys, nlines, ncolumns, fnAct, fnAlt, directory, band)
@@ -179,7 +179,11 @@ class mtf:
         :param ksmear: Amplitude of low-frequency component for the motion smear MTF in ALT [pixels]
         :return: Smearing MTF
         """
+
         #TODO
+
+        Hsmear = np.sinc(ksmear * fnAlt)
+
         return Hsmear
 
     def mtfMotion(self, fn2D, kmotion):
@@ -190,6 +194,8 @@ class mtf:
         :return: detector MTF
         """
         #TODO
+        Hmotion = np.sinc(kmotion * fn2D)
+
         return Hmotion
 
     def plotMtf(self,Hdiff, Hdefoc, Hwfe, Hdet, Hsmear, Hmotion, Hsys, nlines, ncolumns, fnAct, fnAlt, directory, band):
@@ -210,6 +216,72 @@ class mtf:
         :param band: band
         :return: N/A
         """
-        #TODO
+        #Codigo:----------------------------------------------------------
+        # Central indices
+        iAlt = nlines // 2
+        iAct = ncolumns // 2
+
+        # Make sure output directory exists
+        os.makedirs(directory, exist_ok=True)
+
+        # ---------------------------------------------------------
+        # ACT CUT
+        # ---------------------------------------------------------
+        plt.figure(figsize=(10, 6))
+
+        plt.plot(fnAct, Hdiff[iAlt, :], label='Diffraction')
+        plt.plot(fnAct, Hdefoc[iAlt, :], label='Defocus')
+        plt.plot(fnAct, Hwfe[iAlt, :], label='WFE')
+        plt.plot(fnAct, Hdet[iAlt, :], label='Detector')
+        plt.plot(fnAct, Hmotion[iAlt, :], label='Motion blur')
+        plt.plot(fnAct, Hsys[iAlt, :], label='System MTF',
+                 linewidth=2)
+
+        plt.xlabel('Normalised spatial frequency ACT')
+        plt.ylabel('MTF')
+        plt.title('MTF ACT - Band ' + str(band))
+        plt.grid()
+        plt.legend()
+        plt.ylim([0, 1.05])
+
+        plt.tight_layout()
+
+        plt.savefig(
+            os.path.join(directory, 'MTF_ACT_band_' + str(band) + '.png'),
+            dpi=300
+        )
+
+        plt.close()
+
+        # ---------------------------------------------------------
+        # ALT CUT
+        # ---------------------------------------------------------
+        plt.figure(figsize=(10, 6))
+
+        plt.plot(fnAlt, Hdiff[:, iAct], label='Diffraction')
+        plt.plot(fnAlt, Hdefoc[:, iAct], label='Defocus')
+        plt.plot(fnAlt, Hwfe[:, iAct], label='WFE')
+        plt.plot(fnAlt, Hdet[:, iAct], label='Detector')
+        plt.plot(fnAlt, Hsmear, label='Smearing')
+        plt.plot(fnAlt, Hmotion[:, iAct], label='Motion blur')
+        plt.plot(fnAlt, Hsys[:, iAct], label='System MTF',
+                 linewidth=2)
+
+        plt.xlabel('Normalised spatial frequency ALT')
+        plt.ylabel('MTF')
+        plt.title('MTF ALT - Band ' + str(band))
+        plt.grid()
+        plt.legend()
+        plt.ylim([0, 1.05])
+
+        plt.tight_layout()
+
+        plt.savefig(
+            os.path.join(directory, 'MTF_ALT_band_' + str(band) + '.png'),
+            dpi=300
+        )
+
+        plt.close()
+
 
 
