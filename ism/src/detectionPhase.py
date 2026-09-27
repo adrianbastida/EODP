@@ -105,6 +105,7 @@ class detectionPhase(initIsm):
         :return: Toa in photons
         """
         #TODO
+        toa_ph = toa # Esta mal, quitar
         return toa_ph
 
     def phot2Electr(self, toa, QE):
@@ -115,6 +116,7 @@ class detectionPhase(initIsm):
         :return: toa in electrons
         """
         #TODO
+        toae = toa  # Esta mal, quitar
         return toae
 
     def badDeadPixels(self, toa,bad_pix,dead_pix,bad_pix_red,dead_pix_red):
@@ -128,6 +130,7 @@ class detectionPhase(initIsm):
         :return: toa in e- including bad & dead pixels
         """
         #TODO
+
         return toa
 
     def prnu(self, toa, kprnu):

@@ -96,8 +96,10 @@ class mtf:
         fstepAlt = 1 / nlines / w
         fstepAct = 1 / ncolumns / w
 
-        fAlt = np.arange(-1 / (2 * w), 1 / (2 * w) - eps, fstepAlt)
-        fAct = np.arange(-1 / (2 * w), 1 / (2 * w) - eps, fstepAct)
+        eps = np.finfo(float).eps
+
+        fAlt = np.arange(-1 / (2 * w), 1 / (2 * w) -eps, fstepAlt)
+        fAct = np.arange(-1 / (2 * w), 1 / (2 * w) -eps, fstepAct)
 
         [fAltxx, fActxx] = np.meshgrid(fAlt, fAct, indexing='ij')  # Please use ‘ij’ indexing or you will get the transpose
         f2D = np.sqrt(fAltxx * fAltxx + fActxx * fActxx)
@@ -182,7 +184,9 @@ class mtf:
 
         #TODO
 
-        Hsmear = np.sinc(ksmear * fnAlt)
+        HsmearAlt = np.sinc(ksmear * fnAlt)
+
+        Hsmear = repmat(HsmearAlt, ncolumns, 1).T
 
         return Hsmear
 
@@ -216,7 +220,7 @@ class mtf:
         :param band: band
         :return: N/A
         """
-        #Codigo:----------------------------------------------------------
+        #Codigo:---------------------------------------------------------------------
         # Central indices
         iAlt = nlines // 2
         iAct = ncolumns // 2
@@ -273,6 +277,7 @@ class mtf:
         plt.grid()
         plt.legend()
         plt.ylim([0, 1.05])
+        plt.xlim([0, 0.5])
 
         plt.tight_layout()
 
