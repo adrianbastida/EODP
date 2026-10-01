@@ -96,7 +96,7 @@ class mtf:
         fstepAlt = 1 / nlines / w
         fstepAct = 1 / ncolumns / w
 
-        eps = np.finfo(float).eps
+        eps = 1e-6
 
         fAlt = np.arange(-1 / (2 * w), 1 / (2 * w) -eps, fstepAlt)
         fAct = np.arange(-1 / (2 * w), 1 / (2 * w) -eps, fstepAct)

@@ -67,7 +67,14 @@ class videoChainPhase(initIsm):
         :param max_voltage: maximum voltage
         :return: toa in digital counts
         """
+        # comparar con el ism toa que es el definitivo
         #TODO
-        toa_dn = toa  # Esta mal, quitar
+        max_dn = 2 ** bit_depth - 1
+
+        toa_dn = np.round(
+            ((toa - min_voltage) / (max_voltage - min_voltage)) * max_dn
+        )
+
+        toa_dn = np.clip(toa_dn, 0, max_dn)
         return toa_dn
 

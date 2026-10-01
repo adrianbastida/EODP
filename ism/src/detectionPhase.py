@@ -105,7 +105,16 @@ class detectionPhase(initIsm):
         :return: Toa in photons
         """
         #TODO
-        toa_ph = toa # Esta mal, quitar
+
+        # 1. Irradiance [mW/m2] -> incident energy [J]
+        # Convert mW to W with 1e-3
+        Ein = toa * 1e-3 * area_pix * tint
+
+        # 2. Energy of one photon [J]
+        Ephoton = (self.constants.h_planck * self.constants.speed_light) / wv
+
+        # 3. Number of photons
+        toa_ph = Ein / Ephoton
         return toa_ph
 
     def phot2Electr(self, toa, QE):
@@ -116,7 +125,11 @@ class detectionPhase(initIsm):
         :return: toa in electrons
         """
         #TODO
-        toae = toa  # Esta mal, quitar
+        # Convert photons to electrons
+        toae = toa * QE
+
+        # Limit electrons to the Full Well Capacity
+        toae[toae > self.ismConfig.FWC] = self.ismConfig.FWC
         return toae
 
     def badDeadPixels(self, toa,bad_pix,dead_pix,bad_pix_red,dead_pix_red):
@@ -130,6 +143,7 @@ class detectionPhase(initIsm):
         :return: toa in e- including bad & dead pixels
         """
         #TODO
+        toa[:,5] = toa[:,5]*(1-bad_pix_red)
 
         return toa
 
@@ -141,6 +155,10 @@ class detectionPhase(initIsm):
         :return: TOA after adding PRNU [e-]
         """
         #TODO
+        # One PRNU value per ACT pixel
+
+        prnu_act = np.random.standard_normal(toa.shape[1]) * kprnu
+        toa = toa * (1 + prnu_act[np.newaxis, :])
         return toa
 
 
@@ -156,4 +174,13 @@ class detectionPhase(initIsm):
         :return: TOA in [e-] with dark signal
         """
         #TODO
+        # 1. DSNU: one value per ACT pixel
+        # TODO
+        Sd = ds_A_coeff * (T / Tref) ** 3 * np.exp(
+            -ds_B_coeff * (1 / T - 1 / Tref)
+        )
+
+        dsnu_act = np.abs(np.random.standard_normal(toa.shape[1]) * kdsnu)
+        toa = toa + Sd * (1 + dsnu_act[np.newaxis, :])
         return toa
+
