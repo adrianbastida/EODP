@@ -7,6 +7,7 @@ import os
 import numpy as np
 import netCDF4 as nc
 import matplotlib.pyplot as plt
+from common.io.readGeodetic import readGeodetic 
 
 
 
