@@ -55,8 +55,7 @@ class videoChainPhase(initIsm):
         :param gain_adc: Gain of the Analog-to-digital conversion [-]
         :return: output toa in [V]
         """
-        #TODO
-        return toa
+        return np.asarray(toa, dtype=float) * OCF * gain_adc
 
     def digitisation(self, toa, bit_depth, min_voltage, max_voltage):
         """
@@ -67,14 +66,15 @@ class videoChainPhase(initIsm):
         :param max_voltage: maximum voltage
         :return: toa in digital counts
         """
-        # comparar con el ism toa que es el definitivo
-        #TODO
+        if not isinstance(bit_depth, (int, np.integer)) or bit_depth <= 0:
+            raise ValueError("La profundidad de bits debe ser un entero positivo")
+        if not np.isfinite(min_voltage) or not np.isfinite(max_voltage) or max_voltage <= min_voltage:
+            raise ValueError("El voltaje máximo debe ser finito y mayor que el voltaje mínimo")
+        self.saturated_mask = np.asarray(toa) >= max_voltage
         max_dn = 2 ** bit_depth - 1
-
-        toa_dn = np.round(
-            ((toa - min_voltage) / (max_voltage - min_voltage)) * max_dn
+        toa_dn = np.rint(
+            ((np.asarray(toa, dtype=float) - min_voltage) / (max_voltage - min_voltage)) * max_dn
         )
-
         toa_dn = np.clip(toa_dn, 0, max_dn)
-        return toa_dn
+        return toa_dn.astype(np.uint16 if bit_depth <= 16 else np.uint32)
 

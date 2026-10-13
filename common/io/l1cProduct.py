@@ -13,20 +13,29 @@ def writeL1c(outputdir, name, lat, lon, toa):
     # TOA filename
     savetostr = os.path.join(outputdir, name + '.nc')
 
-    # open a netCDF file to write
-    ncout = Dataset(savetostr, 'w', format='NETCDF4')
 
-    # define axis size
-    ncout.createDimension('npoints', len(lat))
+    if np.shape(lat) != np.shape(lon) or np.shape(lat) != np.shape(toa):
+        raise ValueError("Latitud, longitud y radiancia L1C deben tener la misma forma")
+    if np.ndim(lat) == 2:
+        dimensiones = ('nlines', 'ncolumns')
+        tamanos_dimensiones = (lat.shape[0], lat.shape[1])
+    elif np.ndim(lat) == 1:
+        dimensiones = ('npoints',)
+        tamanos_dimensiones = (len(lat),)
+    else:
+        raise ValueError("El producto L1C debe ser una matriz 2D o un vector 1D")
+    ncout = Dataset(savetostr, 'w', format='NETCDF4')
+    for nombre_dimension, tamano_dimension in zip(dimensiones, tamanos_dimensiones):
+        ncout.createDimension(nombre_dimension, tamano_dimension)
 
     # create variable array
-    toa_scene = ncout.createVariable('toa', 'float32', ('npoints',))
+    toa_scene = ncout.createVariable('toa', 'float32', dimensiones, fill_value=np.float32(np.nan))
     toa_scene.units = 'mW/m2/sr'
     toa_scene.description = "L1C radiances"
-    lat_scene = ncout.createVariable('lat', 'float32', ('npoints',))
+    lat_scene = ncout.createVariable('lat', 'float32', dimensiones, fill_value=np.float32(np.nan))
     lat_scene.units = 'degrees'
     lat_scene.description = "L1C geodetic latitude"
-    lon_scene = ncout.createVariable('lon', 'float32', ('npoints',))
+    lon_scene = ncout.createVariable('lon', 'float32', dimensiones, fill_value=np.float32(np.nan))
     lon_scene.units = 'degrees'
     lon_scene.description = "L1C geodetic longitude"
 

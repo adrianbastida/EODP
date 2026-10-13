@@ -39,10 +39,11 @@ class ism(initIsm):
             # -------------------------------------------------------------------------------
             myVcu = videoChainPhase(self.auxdir, self.indir, self.outdir)
             toa = myVcu.compute(toa, band)
+            myDet.quality_mask[myVcu.saturated_mask] |= 4
 
             # Write output TOA
             # -------------------------------------------------------------------------------
-            writeToa(self.outdir, self.globalConfig.ism_toa + band, toa)
+            writeToa(self.outdir, self.globalConfig.ism_toa + band, toa, myDet.quality_mask)
 
             self.logger.info("End of BAND " + band)
 

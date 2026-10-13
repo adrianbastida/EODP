@@ -1,0 +1,7 @@
+numpy>=2.0
+scipy>=1.13
+matplotlib>=3.8
+netCDF4>=1.6
+mgrs>=1.5
+pyproj>=3.6
+PyWavelets>=1.5

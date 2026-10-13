@@ -10,13 +10,15 @@ class detectionPhase(initIsm):
     def __init__(self, auxdir, indir, outdir):
         super().__init__(auxdir, indir, outdir)
 
-        # Initialise the random see for the PRNU and DSNU
-        np.random.seed(self.ismConfig.seed)
+
+        self.rng = np.random.default_rng(self.ismConfig.seed)
 
 
     def compute(self, toa, band):
 
         self.logger.info("EODP-ALG-ISM-2000: Detection stage")
+        self.rng = np.random.default_rng(self.ismConfig.seed + int(band.rsplit("-", 1)[1]))
+        self.quality_mask = np.zeros(np.shape(toa), dtype=np.uint8)
 
         # Irradiance to photons conversion
         # -------------------------------------------------------------------------------
@@ -30,6 +32,7 @@ class detectionPhase(initIsm):
         # -------------------------------------------------------------------------------
         self.logger.info("EODP-ALG-ISM-2030: Photons to Electrons")
         toa = self.phot2Electr(toa, self.ismConfig.QE)
+        self.quality_mask[np.asarray(toa) >= self.ismConfig.FWC] |= 4
 
         self.logger.debug("TOA [0,0] " +str(toa[0,0]) + " [e-]")
 
@@ -142,9 +145,23 @@ class detectionPhase(initIsm):
         :param dead_pix_red: Reduction in the quantum efficiency for the dead pixels [-, over 1]
         :return: toa in e- including bad & dead pixels
         """
-        #TODO
-        toa[:,5] = toa[:,5]*(1-bad_pix_red)
-
+        if toa.ndim != 2:
+            raise ValueError("La imagen de detección debe ser una matriz 2D")
+        if not 0 <= bad_pix <= 100 or not 0 <= dead_pix <= 100:
+            raise ValueError("Los porcentajes de píxeles malos y muertos deben estar entre 0 y 100")
+        toa = np.array(toa, copy=True)
+        num_columns = toa.shape[1]
+        num_bad = int(num_columns * bad_pix / 100.0)
+        num_dead = int(num_columns * dead_pix / 100.0)
+        step_bad = max(1, int(num_columns / num_bad)) if num_bad else num_columns
+        step_dead = max(1, int(num_columns / num_dead)) if num_dead else num_columns
+        idx_bad = np.arange(5, num_columns, step_bad)[:num_bad] if num_bad else np.array([], dtype=int)
+        idx_dead = np.arange(0, num_columns, step_dead)[:num_dead] if num_dead else np.array([], dtype=int)
+        idx_bad = np.setdiff1d(idx_bad, idx_dead, assume_unique=True)
+        self.quality_mask[:, idx_bad] |= 1
+        self.quality_mask[:, idx_dead] |= 2
+        toa[:, idx_bad] *= 1.0 - bad_pix_red
+        toa[:, idx_dead] *= 1.0 - dead_pix_red
         return toa
 
     def prnu(self, toa, kprnu):
@@ -157,7 +174,7 @@ class detectionPhase(initIsm):
         #TODO
         # One PRNU value per ACT pixel
 
-        prnu_act = np.random.standard_normal(toa.shape[1]) * kprnu
+        prnu_act = self.rng.standard_normal(toa.shape[1]) * kprnu
         toa = toa * (1 + prnu_act[np.newaxis, :])
         return toa
 
@@ -180,7 +197,7 @@ class detectionPhase(initIsm):
             -ds_B_coeff * (1 / T - 1 / Tref)
         )
 
-        dsnu_act = np.abs(np.random.standard_normal(toa.shape[1]) * kdsnu)
+        dsnu_act = np.abs(self.rng.standard_normal(toa.shape[1]) * kdsnu)
         toa = toa + Sd * (1 + dsnu_act[np.newaxis, :])
         return toa
 

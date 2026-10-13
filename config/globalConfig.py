@@ -35,3 +35,6 @@ class globalConfig:
 
         # Name of the TOA outputs of the L1C
         self.l1c_toa = "l1c_toa_" # [mW/m2/sr] Radiances. Output of the L1C
+        self.quality_bad_pixel = 1
+        self.quality_dead_pixel = 2
+        self.quality_saturated_pixel = 4

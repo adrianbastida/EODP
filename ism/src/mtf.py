@@ -22,7 +22,7 @@ class mtf:
         self.outdir = outdir
 
     def system_mtf(self, nlines, ncolumns, D, lambd, focal, pix_size,
-                   kLF, wLF, kHF, wHF, defocus, ksmear, kmotion, directory, band):
+                   kLF, wLF, kHF, wHF, defocus, ksmear, kmotion, directory, band, plot=True):
         """
         System MTF
         :param nlines: Lines of the TOA
@@ -69,10 +69,11 @@ class mtf:
 
         # Calculate the System MTF
         self.logger.debug("Calculation of the Sysmtem MTF by multiplying the different contributors")
-        Hsys = Hdiff * Hdefoc * Hwfe * Hdet * Hsmear * Hmotion # dummy
+        Hsys = Hdiff * Hdefoc * Hwfe * Hdet * Hsmear * Hmotion
 
         # Plot cuts ACT/ALT of the MTF
-        self.plotMtf(Hdiff, Hdefoc, Hwfe, Hdet, Hsmear, Hmotion, Hsys, nlines, ncolumns, fnAct, fnAlt, directory, band)
+        if plot:
+            self.plotMtf(Hdiff, Hdefoc, Hwfe, Hdet, Hsmear, Hmotion, Hsys, nlines, ncolumns, fnAct, fnAlt, directory, band)
 
 
         return Hsys
@@ -91,17 +92,11 @@ class mtf:
         :return fnAct: 1D normalised frequencies 2D ACT (f/(1/w))
         :return fnAlt: 1D normalised frequencies 2D ALT (f/(1/w))
         """
-        #TODO
-
-        fstepAlt = 1 / nlines / w
-        fstepAct = 1 / ncolumns / w
-
-        eps = 1e-6
-
-        fAlt = np.arange(-1 / (2 * w), 1 / (2 * w) -eps, fstepAlt)
-        fAct = np.arange(-1 / (2 * w), 1 / (2 * w) -eps, fstepAct)
-
-        [fAltxx, fActxx] = np.meshgrid(fAlt, fAct, indexing='ij')  # Please use ‘ij’ indexing or you will get the transpose
+        if nlines <= 0 or ncolumns <= 0 or w <= 0 or lambd <= 0 or D <= 0 or focal <= 0:
+            raise ValueError("Las dimensiones y los parámetros ópticos deben ser positivos")
+        fAlt = np.fft.fftshift(np.fft.fftfreq(nlines, d=w))
+        fAct = np.fft.fftshift(np.fft.fftfreq(ncolumns, d=w))
+        [fAltxx, fActxx] = np.meshgrid(fAlt, fAct, indexing='ij')
         f2D = np.sqrt(fAltxx * fAltxx + fActxx * fActxx)
 
         fn2D = f2D/ (1/w)
@@ -119,10 +114,9 @@ class mtf:
         :return: diffraction MTF
         """
         #TODO
-        acos_vec = np.vectorize(np.arccos)
-
-        Hdiff = (2 / np.pi) * (acos_vec(fr2D) - fr2D * np.sqrt(1 - fr2D * fr2D))
-        Hdiff[fr2D * fr2D > 1] = 0
+        fr_limitada = np.clip(fr2D, 0.0, 1.0)
+        Hdiff = (2 / np.pi) * (np.arccos(fr_limitada) - fr_limitada * np.sqrt(1 - fr_limitada * fr_limitada))
+        Hdiff[fr2D >= 1.0] = 0.0
 
         return Hdiff
 
@@ -138,8 +132,10 @@ class mtf:
         """
         #TODO
 
-        x = np.pi * defocus * fr2D * (1 - fr2D)
-        Hdefoc = 2 * j1(x) / x
+        fr_limitada = np.clip(fr2D, 0.0, 1.0)
+        x = np.pi * defocus * fr_limitada * (1 - fr_limitada)
+        Hdefoc = np.ones_like(x, dtype=float)
+        np.divide(2 * j1(x), x, out=Hdefoc, where=np.abs(x) > 1e-8)
 
 
         return Hdefoc
@@ -157,7 +153,8 @@ class mtf:
         """
         #TODO
 
-        Hwfe = np.exp(-fr2D * (1 - fr2D) * (kLF * (wLF / lambd) ** 2
+        fr_limitada = np.clip(fr2D, 0.0, 1.0)
+        Hwfe = np.exp(-fr_limitada * (1 - fr_limitada) * (kLF * (wLF / lambd) ** 2
                     + kHF * (wHF / lambd) ** 2
             )
         )
@@ -266,7 +263,7 @@ class mtf:
         plt.plot(fnAlt, Hdefoc[:, iAct], label='Defocus')
         plt.plot(fnAlt, Hwfe[:, iAct], label='WFE')
         plt.plot(fnAlt, Hdet[:, iAct], label='Detector')
-        plt.plot(fnAlt, Hsmear, label='Smearing')
+        plt.plot(fnAlt, Hsmear[:, iAct], label='Smearing')
         plt.plot(fnAlt, Hmotion[:, iAct], label='Motion blur')
         plt.plot(fnAlt, Hsys[:, iAct], label='System MTF',
                  linewidth=2)
@@ -287,6 +284,39 @@ class mtf:
         )
 
         plt.close()
+
+        if band == 'VNIR-0':
+            mascara_positiva = (fnAlt >= 0.0) & (fnAlt <= 0.5)
+            figura, eje = plt.subplots(figsize=(10, 6))
+            eje.plot(fnAlt[mascara_positiva], Hdiff[mascara_positiva, iAct], label='Diffraction MTF')
+            eje.plot(fnAlt[mascara_positiva], Hdefoc[mascara_positiva, iAct], label='Defocus MTF')
+            eje.plot(fnAlt[mascara_positiva], Hwfe[mascara_positiva, iAct], label='WFE Aberations MTF')
+            eje.plot(fnAlt[mascara_positiva], Hdet[mascara_positiva, iAct], label='Detector MTF')
+            eje.plot(fnAlt[mascara_positiva], Hsmear[mascara_positiva, iAct], label='Smearing MTF')
+            eje.plot(fnAlt[mascara_positiva], Hmotion[mascara_positiva, iAct], label='Motion blur MTF')
+            eje.plot(fnAlt[mascara_positiva], Hsys[mascara_positiva, iAct], color='black', linewidth=2, label='System MTF')
+            eje.axvline(0.5, color='black', linestyle='--', linewidth=1.2, label='f Nyquist')
+            eje.set_xlabel('Spatial frequencies f/(1/w) [-]')
+            eje.set_ylabel('MTF')
+            eje.set_title('System MTF - slice ALT')
+            eje.set_xlim(0.0, 0.5)
+            eje.set_ylim(0.0, 1.05)
+            eje.grid(True, alpha=0.35)
+            eje.legend(loc='lower left', fontsize=8)
+            figura.tight_layout()
+            figura.savefig(os.path.join(directory, 'figura1.png'), dpi=300)
+            plt.close(figura)
+
+            figura, eje = plt.subplots(figsize=(10, 6))
+            mapa = eje.imshow(Hsys, origin='lower', aspect='auto', cmap='jet', vmin=0.0, vmax=1.0)
+            eje.set_xlabel('ACT')
+            eje.set_ylabel('ALT')
+            eje.set_title('System MTF for VNIR-0')
+            figura.colorbar(mapa, ax=eje, label='MTF')
+            figura.tight_layout()
+            figura.savefig(os.path.join(directory, 'figura2.png'), dpi=300)
+            plt.close(figura)
+
 
 
 

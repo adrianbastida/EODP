@@ -18,3 +18,10 @@ class l1bConfig:
         # Equalisation, multiplicative and additive factors.
         self.eq_mult = 'equalization/eq_mult_'
         self.eq_add = 'equalization/eq_add_'
+        self.do_cosmetic_filling = True
+        self.do_straylight_correction = False
+        self.straylight_kernel = None
+        self.do_psf_deconvolution = False
+        self.psf_kernel = None
+        self.psf_wiener_regularization = 1e-3
+        self.denoise_wavelet = False

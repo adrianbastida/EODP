@@ -5,7 +5,7 @@ import os
 import sys
 from common.io.mkdirOutputdir import mkdirOutputdir
 
-def writeToa(outputdir, name, toa):
+def writeToa(outputdir, name, toa, quality_mask=None):
 
     # Check output directory
     mkdirOutputdir(outputdir)
@@ -26,11 +26,30 @@ def writeToa(outputdir, name, toa):
 
     # Assign data
     floris_toa_scene[:]         = toa[:]
+    if quality_mask is not None:
+        quality_mask = np.asarray(quality_mask, dtype=np.uint8)
+        if quality_mask.shape != toa.shape:
+            ncout.close()
+            raise ValueError("La máscara de calidad debe tener la misma forma que TOA")
+        quality = ncout.createVariable('quality', 'uint8', ('alt_lines', 'act_columns',))
+        quality.long_name = 'Pixel quality flags'
+        quality.flag_masks = np.array([1, 2, 4], dtype=np.uint8)
+        quality.flag_meanings = 'bad_pixel dead_pixel saturated_pixel'
+        quality[:] = quality_mask
     
     # close files
     ncout.close()
 
     print("Finished writting: " + savetostr)
+
+def readQualityMask(directory, filename):
+    ncfile = os.path.join(directory, filename)
+    if not os.path.isfile(ncfile):
+        return None
+    with Dataset(ncfile) as dset:
+        if 'quality' not in dset.variables:
+            return None
+        return np.asarray(dset.variables['quality'][:], dtype=np.uint8)
 
 def readToa(directory, filename):
 
