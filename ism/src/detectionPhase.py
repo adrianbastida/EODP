@@ -11,13 +11,13 @@ class detectionPhase(initIsm):
         super().__init__(auxdir, indir, outdir)
 
 
-        self.rng = np.random.default_rng(self.ismConfig.seed)
+        self.rng = np.random.RandomState(self.ismConfig.seed)
 
 
     def compute(self, toa, band):
 
         self.logger.info("EODP-ALG-ISM-2000: Detection stage")
-        self.rng = np.random.default_rng(self.ismConfig.seed + int(band.rsplit("-", 1)[1]))
+        self.rng = np.random.RandomState(self.ismConfig.seed)
         self.quality_mask = np.zeros(np.shape(toa), dtype=np.uint8)
 
         # Irradiance to photons conversion
@@ -200,4 +200,3 @@ class detectionPhase(initIsm):
         dsnu_act = np.abs(self.rng.standard_normal(toa.shape[1]) * kdsnu)
         toa = toa + Sd * (1 + dsnu_act[np.newaxis, :])
         return toa
-

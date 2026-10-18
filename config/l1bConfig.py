@@ -8,7 +8,7 @@ class l1bConfig:
     def __init__(self):
 
         # Flags to enable or disable the equalization
-        self.do_equalization = False
+        self.do_equalization = True
 
         # Auxiliary inputs (relative paths to the root folder)
         #--------------------------------------------------------------------------------
@@ -18,7 +18,7 @@ class l1bConfig:
         # Equalisation, multiplicative and additive factors.
         self.eq_mult = 'equalization/eq_mult_'
         self.eq_add = 'equalization/eq_add_'
-        self.do_cosmetic_filling = True
+        self.do_cosmetic_filling = False
         self.do_straylight_correction = False
         self.straylight_kernel = None
         self.do_psf_deconvolution = False

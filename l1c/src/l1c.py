@@ -2,17 +2,14 @@
 # LEVEL-1C
 
 from l1c.src.initL1c import initL1c
-from common.io.writeToa import writeToa, readToa
-from common.io.readGeodetic import readGeodetic, getCorners
+from common.io.writeToa import readToa
+from common.io.readGeodetic import readGeodetic
 import mgrs
 import numpy as np
-from scipy.interpolate import LinearNDInterpolator
-from pyproj import CRS, Transformer
-from matplotlib.path import Path as PolygonPath
+from scipy.interpolate import bisplev, bisplrep
 import matplotlib.pyplot as plt
 import os
 from common.io.l1cProduct import writeL1c
-from matplotlib import cm
 
 class l1c(initL1c):
 
@@ -71,49 +68,59 @@ class l1c(initL1c):
         lat = np.asarray(lat, dtype=float)
         lon = np.asarray(lon, dtype=float)
         toa = np.asarray(toa, dtype=float)
-        mascara_valida = np.isfinite(lat) & np.isfinite(lon) & np.isfinite(toa)
-        if np.count_nonzero(mascara_valida) < 3:
-            raise ValueError("Se necesitan al menos tres píxeles geolocalizados y radiancias válidas para la reproyección")
+        mascara_geografica = np.isfinite(lat) & np.isfinite(lon)
+        mascara_valida = mascara_geografica & np.isfinite(toa)
+        if np.count_nonzero(mascara_valida) < 16:
+            raise ValueError("Se necesitan al menos 16 píxeles geolocalizados y radiancias válidas para ajustar el spline L1C")
         m = mgrs.MGRS()
-        indices_validos = np.flatnonzero(mascara_valida)
+        indices_validos = np.flatnonzero(mascara_geografica)
         indice_representativo = indices_validos[len(indices_validos) // 2]
         fila_representativa, columna_representativa = np.unravel_index(indice_representativo, lat.shape)
         codigo_mgrs = m.toMGRS(float(lat[fila_representativa, columna_representativa]), float(lon[fila_representativa, columna_representativa]), MGRSPrecision=0)
         zona_utm = int(codigo_mgrs[:2])
-        zonas_entrada = {int(m.toMGRS(float(lat[ii, jj]), float(lon[ii, jj]), MGRSPrecision=0)[:2]) for ii, jj in zip(*np.nonzero(mascara_valida))}
+        zonas_entrada = {int(m.toMGRS(float(lat[ii, jj]), float(lon[ii, jj]), MGRSPrecision=0)[:2]) for ii, jj in zip(*np.nonzero(mascara_geografica))}
         if len(zonas_entrada) != 1:
             raise ValueError("La escena cruza varias zonas UTM; debe dividirse por zona antes de generar el producto MGRS")
-        hemisferio_norte = float(np.nanmedian(lat[mascara_valida])) >= 0
-        crs_geografico = CRS.from_epsg(4326)
-        codigo_epsg = (32600 if hemisferio_norte else 32700) + zona_utm
-        crs_utm = CRS.from_epsg(codigo_epsg)
-        a_utm, desde_utm = Transformer.from_crs(crs_geografico, crs_utm, always_xy=True), Transformer.from_crs(crs_utm, crs_geografico, always_xy=True)
-        x_entrada, y_entrada = a_utm.transform(lon[mascara_valida], lat[mascara_valida])
         if self.l1cConfig.mgrs_tile_precision not in range(0, 6):
             raise ValueError("La precisión MGRS debe estar entre 0 y 5")
-        paso = 100000.0 / (10 ** self.l1cConfig.mgrs_tile_precision)
-        x_min, x_max = float(np.min(x_entrada)), float(np.max(x_entrada))
-        y_min, y_max = float(np.min(y_entrada)), float(np.max(y_entrada))
-        x_centros = np.arange(np.floor(x_min / paso) * paso + paso / 2, np.floor(x_max / paso) * paso + paso / 2 + paso / 2, paso)
-        y_centros = np.arange(np.floor(y_min / paso) * paso + paso / 2, np.floor(y_max / paso) * paso + paso / 2 + paso / 2, paso)
-        if x_centros.size == 0 or y_centros.size == 0:
-            raise ValueError("La extensión geográfica no contiene centros de celdas MGRS")
-        x_salida, y_salida = np.meshgrid(x_centros, y_centros, indexing="xy")
-        puntos = np.column_stack((x_entrada, y_entrada))
-        interpolador = LinearNDInterpolator(puntos, toa[mascara_valida], fill_value=np.nan)
-        toa_l1c = np.asarray(interpolador(x_salida, y_salida), dtype=float)
-        borde_latitud = np.concatenate((lat[0, :], lat[1:, -1], lat[-1, -2::-1], lat[-2:0:-1, 0]))
-        borde_longitud = np.concatenate((lon[0, :], lon[1:, -1], lon[-1, -2::-1], lon[-2:0:-1, 0]))
-        borde_valido = np.isfinite(borde_latitud) & np.isfinite(borde_longitud)
-        if np.count_nonzero(borde_valido) < 4:
-            raise ValueError("No hay suficientes coordenadas válidas en el perímetro L1B para limitar la huella")
-        borde_x, borde_y = a_utm.transform(borde_longitud[borde_valido], borde_latitud[borde_valido])
-        poligono_huella = PolygonPath(np.column_stack((borde_x, borde_y)), closed=True)
-        centros_salida = np.column_stack((x_salida.ravel(), y_salida.ravel()))
-        dentro_huella = poligono_huella.contains_points(centros_salida).reshape(toa_l1c.shape)
-        toa_l1c[~dentro_huella] = np.nan
-        lon_l1c, lat_l1c = desde_utm.transform(x_salida, y_salida)
-        return np.asarray(lat_l1c), np.asarray(lon_l1c), toa_l1c
+        tiles_mgrs = set()
+        for fila, columna in zip(*np.nonzero(mascara_geografica)):
+            tile = m.toMGRS(
+                float(lat[fila, columna]),
+                float(lon[fila, columna]),
+                MGRSPrecision=self.l1cConfig.mgrs_tile_precision,
+            )
+            tiles_mgrs.add(tile.decode() if isinstance(tile, bytes) else tile)
+        tiles_ordenades = sorted(tiles_mgrs)
+        coordenades_l1c = [m.toLatLon(tile) for tile in tiles_ordenades]
+        lat_l1c = np.asarray([coordenada[0] for coordenada in coordenades_l1c])
+        lon_l1c = np.asarray([coordenada[1] for coordenada in coordenades_l1c])
+
+        mascara_valida_f = mascara_valida.ravel(order="F")
+        latitud_entrada = lat.ravel(order="F")[mascara_valida_f]
+        longitud_entrada = lon.ravel(order="F")[mascara_valida_f]
+        radiancia_entrada = toa.ravel(order="F")[mascara_valida_f]
+        try:
+            spline, _, estat_fit, missatge_fit = bisplrep(
+                latitud_entrada,
+                longitud_entrada,
+                radiancia_entrada,
+                kx=3,
+                ky=3,
+                s=float(radiancia_entrada.size),
+                full_output=True,
+                quiet=1,
+            )
+        except (ValueError, TypeError, RuntimeError) as error:
+            raise ValueError(f"No s'ha pogut ajustar el spline bivariant L1C per a {band}: {error}") from error
+        if estat_fit > 0:
+            raise ValueError(f"No s'ha pogut ajustar el spline bivariant L1C per a {band}: {missatge_fit}")
+
+        toa_l1c = np.asarray([
+            float(np.asarray(bisplev(float(latitud), float(longitud), spline)).reshape(-1)[0])
+            for latitud, longitud in zip(lat_l1c, lon_l1c)
+        ])
+        return lat_l1c, lon_l1c, toa_l1c
 
     def plotGridComparison(self, lat_l1b, lon_l1b, lat_l1c, lon_l1c, toa_l1c):
         lat_l1b = np.asarray(lat_l1b, dtype=float)

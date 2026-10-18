@@ -25,7 +25,7 @@ class ismConfig:
         self.kmotion = 0.02                      # [pixels] Amplitude of high-frequency component for the motion smear MTF in ALT and ACT
         self.kernel_half_width = 0.5             # [pixels] Half-width of the kernel
         self.kernel_step = 0.1                   # [pixels] Sampling of the kernel
-        self.mtf_padding_pixels = 16
+        self.mtf_padding_pixels = 0
 
         # Central wavelength of the band
         self.wv = np.array([0.49,0.665,0.865,0.945])*1e-6  # [m] Central wavelength

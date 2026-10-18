@@ -7,7 +7,6 @@ import numpy as np
 from common.io.writeToa import writeToa
 from common.io.readIsrf import readIsrf
 from scipy.interpolate import interp1d
-from scipy.integrate import trapezoid
 from common.plot.plotMat2D import plotMat2D
 from common.plot.plotF import plotF
 from scipy.signal import convolve2d
@@ -137,17 +136,19 @@ class opticalPhase(initIsm):
         wv_isrf_nm = wv_isrf * 1000.0
         if np.any(np.diff(wv_isrf_nm) <= 0):
             raise ValueError("Las longitudes de onda ISRF deben ser estrictamente crecientes")
-        integral_isrf = trapezoid(isrf, x=wv_isrf_nm)
+        intervals_isrf_nm = np.diff(wv_isrf_nm)
+        integral_isrf = np.sum(isrf[1:] * intervals_isrf_nm)
         if not np.isfinite(integral_isrf) or integral_isrf <= 0:
             raise ValueError("La integral de la ISRF debe ser positiva y finita")
         isrf_normalizada = isrf / integral_isrf
         isrf_en_escena = interp1d(
             wv_isrf_nm, isrf_normalizada, kind="linear", bounds_error=False, fill_value=0.0
         )(sgm_wv)
-        toa = trapezoid(
-            np.asarray(sgm_toa, dtype=float) * isrf_en_escena[np.newaxis, np.newaxis, :],
-            x=sgm_wv, axis=2
+        # La referència integra les mostres espectrals amb rectangles per l'esquerra.
+        toa = np.sum(
+            np.asarray(sgm_toa, dtype=float)[..., :-1]
+            * isrf_en_escena[np.newaxis, np.newaxis, :-1]
+            * np.diff(sgm_wv),
+            axis=2,
         )
         return toa
-
-
