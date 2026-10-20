@@ -1,5 +1,13 @@
 import unittest
+import logging
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.colors import to_rgba
 import numpy as np
 from pyproj import Transformer
 from scipy.interpolate import bisplev, bisplrep
@@ -9,7 +17,35 @@ from l1c.src.l1c import l1c
 
 
 class ProvesRejillaL1C(unittest.TestCase):
-    """Proves de l'alineació de la rejilla L1C amb les coordenades MGRS."""
+    def test_comparativa_amb_malles_valides_dibuixa_punts_vermells_i_blaus(self):
+        latitud = np.array([[40.0, 40.0], [40.01, 40.01]])
+        longitud = np.array([[3.0, 3.01], [3.0, 3.01]])
+        processador = l1c.__new__(l1c)
+        processador.logger = logging.getLogger(__name__)
+        with TemporaryDirectory() as directori:
+            processador.outdir = directori
+            with patch("l1c.src.l1c.plt.close"):
+                try:
+                    processador.plotGridComparison(
+                        latitud, longitud, latitud.ravel(), longitud.ravel(), np.ones(4)
+                    )
+                    eix = plt.gcf().axes[0]
+                    self.assertEqual(len(eix.lines), 0, "No continuous outlines should be drawn")
+                    self.assertEqual(len(eix.collections), 2)
+                    for punts, color in zip(eix.collections, ("red", "blue")):
+                        np.testing.assert_allclose(
+                            punts.get_facecolors()[0], to_rgba(color, alpha=0.82)
+                        )
+                        np.testing.assert_allclose(
+                            punts.get_offsets(), np.column_stack((longitud.ravel(), latitud.ravel()))
+                        )
+                    self.assertTrue(
+                        (Path(directori) / "figure_9-2_l1b_irregular_l1c_regular_grids.png").is_file(),
+                        "The comparison PNG should be generated",
+                    )
+                finally:
+                    figura = plt.gcf()
+            plt.close(figura)
 
     def test_l1cProjtoa_amb_malla_utm_alinea_sortida_amb_origen_mgrs(self):
         transformador_utm = Transformer.from_crs(32631, 4326, always_xy=True)
