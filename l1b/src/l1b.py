@@ -66,8 +66,7 @@ class l1b(initL1b):
             # -------------------------------------------------------------------------------
             writeToa(self.outdir, self.globalConfig.l1b_toa + band, toa)
             self.plotL1bToa(toa, self.outdir, band)
-            if band == 'VNIR-0':
-                self.plotEqualizationModel(toa_dn_original, band)
+            self.plotEqualizationModel(toa_dn_original, band)
 
             self.logger.info("End of BAND " + band)
 
@@ -205,10 +204,14 @@ class l1b(initL1b):
         plotMat2D(toa_l1b, title_str, 'ACT', 'ALT', outputdir, saveas_str)
 
     def plotEqualizationModel(self, toa_dn_original, band):
+        indice_linia = 50
+        if np.ndim(toa_dn_original) != 2 or np.shape(toa_dn_original)[0] <= indice_linia:
+            self.logger.warning("Cannot generate the comparison for %s: ALT line 50 is required", band)
+            return
         ruta_eq_mult = os.path.join(self.auxdir, self.l1bConfig.eq_mult + band + NC_EXT)
         ruta_eq_add = os.path.join(self.auxdir, self.l1bConfig.eq_add + band + NC_EXT)
         if not os.path.isfile(ruta_eq_mult) or not os.path.isfile(ruta_eq_add):
-            self.logger.warning("No se genera figura3: faltan factores de ecualización para %s", band)
+            self.logger.warning("Cannot generate the comparison: missing equalization factors for %s", band)
             return
         eq_mult = readFactor(ruta_eq_mult, EQ_MULT)
         eq_add = readFactor(ruta_eq_add, EQ_ADD)
@@ -218,25 +221,27 @@ class l1b(initL1b):
         toa_l1b_sin_eq = toa_dn_original * ganancia
         archivo_referencia = os.path.join(self.indir, self.globalConfig.ism_toa_isrf + band + NC_EXT)
         if not os.path.isfile(archivo_referencia):
-            self.logger.warning("No se genera figura3: falta la referencia ISRF %s", archivo_referencia)
+            self.logger.warning("Cannot generate the comparison: missing ISRF reference %s", archivo_referencia)
             return
         toa_isrf = readToa(self.indir, self.globalConfig.ism_toa_isrf + band + NC_EXT)
         if toa_isrf.shape != toa_dn_original.shape:
-            self.logger.warning("No se genera figura3: las dimensiones de ISRF %s y DN %s no coinciden", toa_isrf.shape, toa_dn_original.shape)
+            self.logger.warning("Cannot generate the comparison: ISRF shape %s and DN shape %s do not match", toa_isrf.shape, toa_dn_original.shape)
             return
-        linea_central = toa_dn_original.shape[0] // 2
         indices_act = np.arange(toa_dn_original.shape[1])
         figura, eje = plt.subplots(figsize=(12, 6))
-        eje.plot(indices_act, toa_l1b_eq[linea_central], color='black', label='TOA L1B with eq')
-        eje.plot(indices_act, toa_l1b_sin_eq[linea_central], color='red', label='TOA L1B no eq')
-        eje.plot(indices_act, toa_isrf[linea_central], color='blue', label='TOA after the ISRF')
-        eje.set_title(f'Effect of the Equalization for {band}')
+        eje.plot(indices_act, toa_l1b_eq[indice_linia], color='black', label='TOA L1B with equalization')
+        eje.plot(indices_act, toa_l1b_sin_eq[indice_linia], color='red', label='TOA L1B without equalization')
+        eje.plot(indices_act, toa_isrf[indice_linia], color='blue', label='TOA after the ISRF')
+        eje.set_title(f'Effect of equalization for {band} - ALT {indice_linia}')
         eje.set_xlabel('ACT pixel [-]')
         eje.set_ylabel('TOA [mW/m2/sr]')
         eje.grid(True, linestyle='--', alpha=0.55)
         eje.legend(loc='upper left')
         figura.tight_layout()
-        ruta_figura = os.path.join(self.outdir, 'figura3.png')
+        numero_figura = getIndexBand(band) + 1
+        ruta_figura = os.path.join(self.outdir, f'figure_{numero_figura}_equalization_{band}.png')
         figura.savefig(ruta_figura, dpi=300)
+        if band == 'VNIR-0':
+            figura.savefig(os.path.join(self.outdir, 'figura3.png'), dpi=300)
         plt.close(figura)
-        self.logger.info("Figura 3 de ecualización guardada en %s", ruta_figura)
+        self.logger.info("Equalization figure %s saved to %s", numero_figura, ruta_figura)
