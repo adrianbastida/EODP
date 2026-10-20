@@ -112,9 +112,9 @@ class l1c(initL1c):
                 quiet=1,
             )
         except (ValueError, TypeError, RuntimeError) as error:
-            raise ValueError(f"No s'ha pogut ajustar el spline bivariant L1C per a {band}: {error}") from error
+            raise ValueError(f"Could not fit the L1C bivariate spline for {band}: {error}") from error
         if estat_fit > 0:
-            raise ValueError(f"No s'ha pogut ajustar el spline bivariant L1C per a {band}: {missatge_fit}")
+            raise ValueError(f"Could not fit the L1C bivariate spline for {band}: {missatge_fit}")
 
         toa_l1c = np.asarray([
             float(np.asarray(bisplev(float(latitud), float(longitud), spline)).reshape(-1)[0])
@@ -132,15 +132,8 @@ class l1c(initL1c):
         if not mascara_l1b.any() or not mascara_l1c.any():
             raise ValueError("No hay coordenadas válidas suficientes para representar las mallas L1B y L1C")
         figura, eje = plt.subplots(figsize=(11, 8), constrained_layout=True)
-        borde_l1b = (
-            (lon_l1b[0, :], lat_l1b[0, :], mascara_l1b[0, :]),
-            (lon_l1b[-1, :], lat_l1b[-1, :], mascara_l1b[-1, :]),
-            (lon_l1b[:, 0], lat_l1b[:, 0], mascara_l1b[:, 0]),
-            (lon_l1b[:, -1], lat_l1b[:, -1], mascara_l1b[:, -1]),
-        )
-        for indice, (longitudes, latitudes, validos) in enumerate(borde_l1b):
-            eje.plot(np.where(validos, longitudes, np.nan), np.where(validos, latitudes, np.nan), color="#222222", linewidth=1.2, label="L1B" if indice == 0 else None, zorder=2)
-        eje.scatter(lon_l1c[mascara_l1c], lat_l1c[mascara_l1c], s=6, color="#C51B29", marker="o", linewidths=0, alpha=0.82, label="L1C MGRS", zorder=3)
+        eje.scatter(lon_l1b[mascara_l1b], lat_l1b[mascara_l1b], s=6, color="red", marker="o", linewidths=0, alpha=0.82, label="L1B", zorder=2)
+        eje.scatter(lon_l1c[mascara_l1c], lat_l1c[mascara_l1c], s=6, color="blue", marker="o", linewidths=0, alpha=0.82, label="L1C MGRS", zorder=3)
         eje.set_xlabel("Longitud [deg]")
         eje.set_ylabel("Latitud [deg]")
         eje.grid(True, linewidth=0.45, alpha=0.45)
