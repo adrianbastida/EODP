@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ef4f969c-5405-48ba-80e7-5defaa62d447" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/l1c/src/l1c.py" beforeDir="false" afterPath="$PROJECT_DIR$/l1c/src/l1c.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/l1b/test/spatial_sampling_distance.py" beforeDir="false" afterPath="$PROJECT_DIR$/l1b/test/spatial_sampling_distance.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

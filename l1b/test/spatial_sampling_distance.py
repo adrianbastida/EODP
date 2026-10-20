@@ -12,28 +12,21 @@ from pyproj import Geod
 
 
 def calcular_distancia_espacial(latitud, longitud, indice_linea):
-    """Calcula la distància geodèsica entre píxels consecutius d'una línia.
-
-    :param latitud: Matriu de latituds en graus.
-    :param longitud: Matriu de longituds en graus.
-    :param indice_linea: Índex de la línia que s'ha de calcular, començant per zero.
-    :return: Vector de distàncies entre píxels consecutius, en metres.
-    """
     latitud = np.asarray(latitud, dtype=float)
     longitud = np.asarray(longitud, dtype=float)
     if latitud.ndim != 2 or longitud.ndim != 2 or latitud.shape != longitud.shape:
-        raise ValueError("La latitud i la longitud han de ser matrius 2D de la mateixa mida")
+        raise ValueError("Latitude and longitude must be 2D arrays with the same shape")
     if not isinstance(indice_linea, (int, np.integer)) or not 0 <= indice_linea < latitud.shape[0]:
-        raise ValueError("L'índex de línia ha d'estar dins de les dimensions de la geolocalització")
+        raise ValueError("The line index must be within the geolocation dimensions")
     if latitud.shape[1] < 2:
-        raise ValueError("La línia ha de contenir almenys dos píxels")
+        raise ValueError("The line must contain at least two pixels")
 
     latitud_linia = latitud[indice_linea]
     longitud_linia = longitud[indice_linea]
     if not np.all(np.isfinite(latitud_linia)) or not np.all(np.isfinite(longitud_linia)):
-        raise ValueError("La línia seleccionada conté coordenades no finites")
+        raise ValueError("The selected line contains non-finite coordinates")
     if np.any(np.abs(latitud_linia) > 90):
-        raise ValueError("Les latituds han d'estar entre -90 i 90 graus")
+        raise ValueError("Latitudes must be between -90 and 90 degrees")
 
     geodesia = Geod(ellps="WGS84")
     _, _, distancia = geodesia.inv(
@@ -46,13 +39,6 @@ def calcular_distancia_espacial(latitud, longitud, indice_linea):
 
 
 def generar_grafica_distancia_espacial(ruta_geolocalitzacio, indice_linea, ruta_sortida):
-    """Genera i desa la gràfica de distància espacial per a una línia GEO.
-
-    :param ruta_geolocalitzacio: Fitxer NetCDF amb latituds i longituds GEO.
-    :param indice_linea: Índex de la línia que s'ha de representar, començant per zero.
-    :param ruta_sortida: Ruta del fitxer PNG de sortida.
-    :return: Ruta de la figura generada.
-    """
     with Dataset(ruta_geolocalitzacio, "r") as conjunt_dades:
         projeccio = conjunt_dades.groups["projection"]
         latitud = np.ma.asarray(projeccio.variables["latitude"][:]).filled(np.nan)
@@ -76,7 +62,6 @@ def generar_grafica_distancia_espacial(ruta_geolocalitzacio, indice_linea, ruta_
 
 
 def main():
-    """Executa el càlcul i desa la gràfica de distància espacial."""
     directori_eodp = Path(__file__).resolve().parents[3]
     directori_dades = directori_eodp / "EODP_TER_2021"
     ruta_geolocalitzacio_defecte = (
@@ -94,25 +79,25 @@ def main():
     )
 
     parser = argparse.ArgumentParser(
-        description="Genera la gràfica de distància espacial d'una línia GEO."
+        description="Generate the spatial sampling distance plot for a GEO line."
     )
     parser.add_argument(
         "--geolocalitzacio",
         type=Path,
         default=ruta_geolocalitzacio_defecte,
-        help="Fitxer NetCDF de geolocalització.",
+        help="Geolocation NetCDF file.",
     )
     parser.add_argument(
         "--linea",
         type=int,
         default=50,
-        help="Índex de línia, començant per zero (per defecte: 50).",
+        help="Zero-based line index (default: 50).",
     )
     parser.add_argument(
         "--sortida",
         type=Path,
         default=ruta_sortida_defecte,
-        help="Ruta del PNG generat.",
+        help="Output PNG path.",
     )
     arguments = parser.parse_args()
 
@@ -121,7 +106,7 @@ def main():
         arguments.linea,
         arguments.sortida,
     )
-    print(f"Gràfica desada a: {ruta_generada}")
+    print(f"Plot saved to: {ruta_generada}")
 
 
 if __name__ == "__main__":
