@@ -62,8 +62,9 @@ def generar_grafica_distancia_espacial(ruta_geolocalitzacio, indice_linea, ruta_
 
 
 def main():
-    directori_eodp = Path(__file__).resolve().parents[3]
-    directori_dades = directori_eodp / "EODP_TER_2021"
+    directori_dades = Path(
+        r"C:\Users\adria\Desktop\carpeta\master\tierra\EODP_TER_2021"
+    )
     ruta_geolocalitzacio_defecte = (
         directori_dades
         / "EODP-TS-L1C"
