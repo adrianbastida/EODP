@@ -228,31 +228,36 @@ class mtf:
         # ---------------------------------------------------------
         # ACT CUT
         # ---------------------------------------------------------
-        plt.figure(figsize=(10, 6))
+        mascara_act = (fnAct >= 0.0) & (fnAct <= 0.5)
+        figura, eje = plt.subplots(figsize=(10, 6))
 
-        plt.plot(fnAct, Hdiff[iAlt, :], label='Diffraction')
-        plt.plot(fnAct, Hdefoc[iAlt, :], label='Defocus')
-        plt.plot(fnAct, Hwfe[iAlt, :], label='WFE')
-        plt.plot(fnAct, Hdet[iAlt, :], label='Detector')
-        plt.plot(fnAct, Hmotion[iAlt, :], label='Motion blur')
-        plt.plot(fnAct, Hsys[iAlt, :], label='System MTF',
+        eje.plot(fnAct[mascara_act], Hdiff[iAlt, mascara_act], label='Diffraction')
+        eje.plot(fnAct[mascara_act], Hdefoc[iAlt, mascara_act], label='Defocus')
+        eje.plot(fnAct[mascara_act], Hwfe[iAlt, mascara_act], label='WFE')
+        eje.plot(fnAct[mascara_act], Hdet[iAlt, mascara_act], label='Detector')
+        eje.plot(fnAct[mascara_act], Hsmear[iAlt, mascara_act], label='Smearing')
+        eje.plot(fnAct[mascara_act], Hmotion[iAlt, mascara_act], label='Motion blur')
+        eje.plot(fnAct[mascara_act], Hsys[iAlt, mascara_act], label='System MTF',
                  linewidth=2)
 
-        plt.xlabel('Normalised spatial frequency ACT')
-        plt.ylabel('MTF')
-        plt.title('MTF ACT - Band ' + str(band))
-        plt.grid()
-        plt.legend()
-        plt.ylim([0, 1.05])
+        eje.set_xlabel('Normalised spatial frequency ACT')
+        eje.set_ylabel('MTF')
+        eje.set_title('MTF ACT - Band ' + str(band))
+        eje.set_xticks(np.arange(0.0, 0.51, 0.1))
+        eje.set_yticks(np.arange(0.0, 1.01, 0.2))
+        eje.grid(True, alpha=0.35)
+        eje.legend(loc='lower left')
+        eje.set_ylim(0.0, 1.05)
+        eje.set_xlim(0.0, 0.5)
 
-        plt.tight_layout()
+        figura.tight_layout()
 
-        plt.savefig(
+        figura.savefig(
             os.path.join(directory, 'MTF_ACT_band_' + str(band) + '.png'),
             dpi=300
         )
 
-        plt.close()
+        plt.close(figura)
 
         # ---------------------------------------------------------
         # ALT CUT
