@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ef4f969c-5405-48ba-80e7-5defaa62d447" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/l1c/test/check_l1c_geometry.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/l1c/test/check_l1c_inputs.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/l1c/test/cross_validation_l1c.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/l1c/src/l1c.py" beforeDir="false" afterPath="$PROJECT_DIR$/l1c/src/l1c.py" afterDir="false" />
-    </list>
+    <list default="true" id="ef4f969c-5405-48ba-80e7-5defaa62d447" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
