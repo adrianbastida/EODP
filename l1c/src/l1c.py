@@ -70,6 +70,9 @@ class l1c(initL1c):
         toa = np.asarray(toa, dtype=float)
         mascara_geografica = np.isfinite(lat) & np.isfinite(lon)
         mascara_valida = mascara_geografica & np.isfinite(toa)
+        print("Input pixels:", toa.size)
+        print("Valid pixels:", np.count_nonzero(mascara_valida))
+        print("Invalid pixels:", toa.size - np.count_nonzero(mascara_valida))
         if np.count_nonzero(mascara_valida) < 16:
             raise ValueError("Se necesitan al menos 16 píxeles geolocalizados y radiancias válidas para ajustar el spline L1C")
         m = mgrs.MGRS()
@@ -96,25 +99,16 @@ class l1c(initL1c):
         lat_l1c = np.asarray([coordenada[0] for coordenada in coordenades_l1c])
         lon_l1c = np.asarray([coordenada[1] for coordenada in coordenades_l1c])
 
-        mascara_valida_f = mascara_valida.ravel(order="F")
-        latitud_entrada = lat.ravel(order="F")[mascara_valida_f]
-        longitud_entrada = lon.ravel(order="F")[mascara_valida_f]
-        radiancia_entrada = toa.ravel(order="F")[mascara_valida_f]
-        try:
-            spline, _, estat_fit, missatge_fit = bisplrep(
-                latitud_entrada,
-                longitud_entrada,
-                radiancia_entrada,
-                kx=3,
-                ky=3,
-                s=float(radiancia_entrada.size),
-                full_output=True,
-                quiet=1,
-            )
-        except (ValueError, TypeError, RuntimeError) as error:
-            raise ValueError(f"Could not fit the L1C bivariate spline for {band}: {error}") from error
-        if estat_fit > 0:
-            raise ValueError(f"Could not fit the L1C bivariate spline for {band}: {missatge_fit}")
+        mascara_valida_f = mascara_valida.ravel(order="C")
+        latitud_entrada = lat.ravel(order="C")[mascara_valida_f]
+        longitud_entrada = lon.ravel(order="C")[mascara_valida_f]
+        radiancia_entrada = toa.ravel(order="C")[mascara_valida_f]
+
+        spline = bisplrep(
+            latitud_entrada,
+            longitud_entrada,
+            radiancia_entrada
+        )
 
         toa_l1c = np.asarray([
             float(np.asarray(bisplev(float(latitud), float(longitud), spline)).reshape(-1)[0])
