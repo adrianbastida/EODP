@@ -45,6 +45,9 @@ def generar_grafica_distancia_espacial(ruta_geolocalitzacio, indice_linea, ruta_
         longitud = np.ma.asarray(projeccio.variables["longitude"][:]).filled(np.nan)
 
     distancies = calcular_distancia_espacial(latitud, longitud, indice_linea)
+    print(f"Minimum SSD: {np.min(distancies):.6f} m")
+    print(f"Maximum SSD: {np.max(distancies):.6f} m")
+    print(f"Mean SSD:    {np.mean(distancies):.6f} m")
     ruta_sortida = Path(ruta_sortida)
     ruta_sortida.parent.mkdir(parents=True, exist_ok=True)
 
