@@ -7,11 +7,7 @@
     <list default="true" id="ef4f969c-5405-48ba-80e7-5defaa62d447" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/ismConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/ismConfig.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/l1bConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/l1bConfig.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ism/mainIsm.py" beforeDir="false" afterPath="$PROJECT_DIR$/ism/mainIsm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/l1b/mainL1b.py" beforeDir="false" afterPath="$PROJECT_DIR$/l1b/mainL1b.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/l1b/src/l1b.py" beforeDir="false" afterPath="$PROJECT_DIR$/l1b/src/l1b.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/l1c/mainL1c.py" beforeDir="false" afterPath="$PROJECT_DIR$/l1c/mainL1c.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -13,7 +13,7 @@ class ismConfig:
         self.t_int = 0.0428                     # [s] Integration time
 
         # Optical system
-        self.D = 0.007565                           # [m] Telescope pupil diameter
+        self.D = 0.07565                           # [m] Telescope pupil diameter
         self.f = 0.2345                          # [m] Focal length
         self.Tr = 0.99                           # [-] Optical transmittance
         self.wLF = 100e-9                        # [m] RMS of low-frequency wavefront errors

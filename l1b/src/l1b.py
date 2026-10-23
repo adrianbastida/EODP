@@ -59,22 +59,20 @@ class l1b(initL1b):
                 toa = self.kernelCorrection(toa, self.l1bConfig.straylight_kernel, "straylight")
             if self.l1bConfig.do_psf_deconvolution:
                 toa = self.kernelCorrection(toa, self.l1bConfig.psf_kernel, "PSF")
+
             if self.l1bConfig.denoise_wavelet:
                 toa = self.waveletDenoise(toa)
 
             # Write output TOA
             # -------------------------------------------------------------------------------
-                writeToa(self.outdir, self.globalConfig.l1b_toa + band, toa)
-                self.plotL1bToa(toa, self.outdir, band)
+            writeToa(self.outdir, self.globalConfig.l1b_toa + band, toa)
+            self.plotL1bToa(toa, self.outdir, band)
+
+            if self.l1bConfig.do_equalization:
                 self.plotEqualizationModel(toa_dn_original, band)
 
-            #writeToa(self.outdir, self.globalConfig.l1b_toa + band, toa)
-            #self.plotL1bToa(toa, self.outdir, band)
-
-            #if self.l1bConfig.do_equalization:
-            #    self.plotEqualizationModel(toa_dn_original, band)
-
             self.logger.info("End of BAND " + band)
+
 
         self.logger.info("End of the L1B Module!")
 
