@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ef4f969c-5405-48ba-80e7-5defaa62d447" name="Changes" comment="" />
+    <list default="true" id="ef4f969c-5405-48ba-80e7-5defaa62d447" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/ismConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/ismConfig.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/l1bConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/l1bConfig.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ism/mainIsm.py" beforeDir="false" afterPath="$PROJECT_DIR$/ism/mainIsm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/l1b/mainL1b.py" beforeDir="false" afterPath="$PROJECT_DIR$/l1b/mainL1b.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/l1b/src/l1b.py" beforeDir="false" afterPath="$PROJECT_DIR$/l1b/src/l1b.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/l1c/mainL1c.py" beforeDir="false" afterPath="$PROJECT_DIR$/l1c/mainL1c.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,61 +30,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.1465925847598503E-9" />
-      <entry key="MS500" value="0.016288527513142526" />
-      <entry key="S2" value="0.35724853493527325" />
-      <entry key="S5" value="0.6625035085226038" />
-      <entry key="S10" value="0.8139431850704346" />
-      <entry key="S30" value="0.9336799449153131" />
-      <entry key="S60" value="0.9662711549639227" />
-      <entry key="M2" value="0.9829909231340453" />
-      <entry key="M5" value="0.9931613337490872" />
-      <entry key="M10" value="0.9965748008800379" />
-      <entry key="M15" value="0.997715228377302" />
-      <entry key="M30" value="0.9988569609194812" />
-      <entry key="H1" value="0.9994283170490423" />
-      <entry key="H2" value="0.999714117660165" />
-      <entry key="H4" value="0.999857048612533" />
-      <entry key="D1" value="0.9999761733495274" />
-      <entry key="W1" value="0.9999965961580314" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0000000083332299" />
+      <entry key="S2" value="1.0148722686458833" />
+      <entry key="S5" value="1.2794931055059282" />
+      <entry key="S10" value="1.7467247145994653" />
+      <entry key="S30" value="2.4397927194444953" />
+      <entry key="S60" value="2.7130675411833285" />
+      <entry key="M2" value="3.1535495215276166" />
+      <entry key="M5" value="4.771858328372288" />
+      <entry key="M10" value="6.286668556304779" />
+      <entry key="M15" value="7.021527744818923" />
+      <entry key="M30" value="7.914469251503639" />
+      <entry key="H1" value="8.430727518311407" />
+      <entry key="H2" value="8.708405859409869" />
+      <entry key="H4" value="8.852420253181336" />
+      <entry key="D1" value="8.975152027283958" />
+      <entry key="W1" value="8.996444084589054" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.0" />
-      <entry key="S10" value="1.0" />
-      <entry key="S30" value="1.0" />
-      <entry key="S60" value="1.0" />
-      <entry key="M2" value="1.0" />
-      <entry key="M5" value="1.0" />
-      <entry key="M10" value="1.0" />
-      <entry key="M15" value="1.0" />
-      <entry key="M30" value="1.0" />
-      <entry key="H1" value="1.0" />
-      <entry key="H2" value="1.0" />
-      <entry key="H4" value="1.0" />
-      <entry key="D1" value="1.0" />
-      <entry key="W1" value="1.0" />
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="3.829633E-317" />
+      <entry key="S2" value="7.866640151235087E-80" />
+      <entry key="S5" value="2.2820003871663023E-32" />
+      <entry key="S10" value="1.5106291362099117E-16" />
+      <entry key="S30" value="5.325813476739168E-6" />
+      <entry key="S60" value="0.002307772405749573" />
+      <entry key="M2" value="0.04803927982130428" />
+      <entry key="M5" value="0.2969194143222097" />
+      <entry key="M10" value="0.544903123795606" />
+      <entry key="M15" value="0.667133677960388" />
+      <entry key="M30" value="0.8167825157043873" />
+      <entry key="H1" value="0.9037602091840441" />
+      <entry key="H2" value="0.9506630366139436" />
+      <entry key="H4" value="0.9750195057607532" />
+      <entry key="D1" value="0.9957925757359495" />
+      <entry key="W1" value="0.9993978527378535" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.6965351477821186E-9" />
-      <entry key="MS500" value="0.030351057666166158" />
-      <entry key="S2" value="0.7016110465310577" />
-      <entry key="S5" value="1.3153428930378526" />
-      <entry key="S10" value="1.6219279525724273" />
-      <entry key="S30" value="1.8650759934782395" />
-      <entry key="S60" value="1.9313597770929614" />
-      <entry key="M2" value="1.9653801647939073" />
-      <entry key="M5" value="1.9860794601492469" />
-      <entry key="M10" value="1.9930275726661166" />
-      <entry key="M15" value="1.9953490092672932" />
-      <entry key="M30" value="1.997673150661113" />
-      <entry key="H1" value="1.9988362366402528" />
-      <entry key="H2" value="1.9994180336228917" />
-      <entry key="H4" value="1.9997089956340544" />
-      <entry key="D1" value="1.9999514963307763" />
-      <entry key="W1" value="1.9999930708323548" />
+      <entry key="MS100" value="7.833410019304832E-5" />
+      <entry key="MS500" value="0.150935075585009" />
+      <entry key="S2" value="0.6332307906797524" />
+      <entry key="S5" value="1.0655354569612636" />
+      <entry key="S10" value="1.5986159168964515" />
+      <entry key="S30" value="2.3705654240282876" />
+      <entry key="S60" value="2.6768692891632178" />
+      <entry key="M2" value="3.179322341327809" />
+      <entry key="M5" value="5.055401319415224" />
+      <entry key="M10" value="6.822763775568568" />
+      <entry key="M15" value="7.682100194994884" />
+      <entry key="M30" value="8.727551122671308" />
+      <entry key="H1" value="9.33251571631074" />
+      <entry key="H2" value="9.658050127752487" />
+      <entry key="H4" value="9.82692187407484" />
+      <entry key="D1" value="9.97085708104688" />
+      <entry key="W1" value="9.99582940424823" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -88,39 +96,40 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python tests.Python tests in test_l1c_grid.py.executor": "Run",
-    "Python.check_l1c_geometry.executor": "Run",
-    "Python.check_l1c_inputs.executor": "Run",
-    "Python.cross_validation_ism.executor": "Run",
-    "Python.cross_validation_l1b.executor": "Run",
-    "Python.cross_validation_l1c.executor": "Run",
-    "Python.cross_validation_optical.executor": "Run",
-    "Python.l1c.executor": "Run",
-    "Python.mainIsm.executor": "Run",
-    "Python.mainL1b.executor": "Run",
-    "Python.mainL1c.executor": "Run",
-    "Python.spatial_sampling_distance.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "main",
-    "junie.onboarding.icon.badge.shown": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.jshint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.jshint": "",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true",
-    "to.speed.mode.migration.done": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python tests.Python tests in test_l1c_grid.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.check_l1c_geometry.executor&quot;: &quot;Run&quot;,
+    &quot;Python.check_l1c_inputs.executor&quot;: &quot;Run&quot;,
+    &quot;Python.cross_validation_ism.executor&quot;: &quot;Run&quot;,
+    &quot;Python.cross_validation_l1b.executor&quot;: &quot;Run&quot;,
+    &quot;Python.cross_validation_l1c.executor&quot;: &quot;Run&quot;,
+    &quot;Python.cross_validation_optical.executor&quot;: &quot;Run&quot;,
+    &quot;Python.l1b.executor&quot;: &quot;Run&quot;,
+    &quot;Python.l1c.executor&quot;: &quot;Run&quot;,
+    &quot;Python.mainIsm.executor&quot;: &quot;Run&quot;,
+    &quot;Python.mainL1b.executor&quot;: &quot;Run&quot;,
+    &quot;Python.mainL1c.executor&quot;: &quot;Run&quot;,
+    &quot;Python.spatial_sampling_distance.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.jshint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.jshint&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;python.packages.toolwindow.project.migrated.to.right.top.v2&quot;: &quot;true&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="mainIsm" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="EODP" />

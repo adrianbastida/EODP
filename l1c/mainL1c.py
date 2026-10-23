@@ -6,8 +6,8 @@ from l1c.src.l1c import l1c
 # Directory - this is the common directory for the execution of the E2E, all modules
 auxdir = r"C:\\Users\\adria\\Documents\\GitHub\\EODP\\auxiliary"
 # GM dir + L1B dir
-indir = r'C:\\Users\\adria\\Desktop\\carpeta\\master\\tierra\\EODP_TER_2021\\EODP-TS-L1C\\input\\gm_alt100_act_150,C:\\Users\\adria\\Desktop\\carpeta\\master\\tierra\\EODP_TER_2021\\EODP-TS-L1C\\input\\l1b_output'
-outdir = r'C:\\Users\\adria\\Desktop\\carpeta\\master\\tierra\\EODP_TER_2021\\EODP-TS-L1C\\myoutput'
+indir = r'C:\\Users\\adria\\Desktop\\carpeta\\master\\tierra\\EODP-TS-E2E\\gm_out,C:\\Users\\adria\\Desktop\\carpeta\\master\\tierra\\EODP-TS-E2E\\myoutput_l1b'
+outdir = r'C:\\Users\\adria\\Desktop\\carpeta\\master\\tierra\\EODP-TS-E2E\\myoutput_l1c'
 # GM dir + L1B dir
 
 
